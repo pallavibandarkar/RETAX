@@ -1,25 +1,23 @@
-if (process.env.NODE_ENV != "production") {
-  require("dotenv").config();
-}
-const express = require("express");
+import express from "express";
+import connectDB from "./db/connectDB.js";
+import AdminRoutes from "./routes/admin.route.js";
+import UserRoutes from "./routes/teamspace.route.js";
+
 const app = express();
-const mongoose = require("mongoose");
+const PORT = process.env.PORT || 3000;
 
-const dbUrl = process.env.MONGO_URL;
+connectDB();
 
-main()
-  .then(() => {
-    console.log("Connected to Atlas db successfully!!!");
-  })
-  .catch((err) => {
-    console.log(err);
-    console.log("oops!Something went wrong!!!");
-  });
+app.use(express.json());
 
-async function main() {
-  await mongoose.connect(dbUrl);
-}
 
-app.listen(8080, (req, res) => {
-  console.log("Listening on port 8080");
+app.use("/api",AdminRoutes);
+app.use("/api",UserRoutes);
+
+app.get("/", (req, res) => {
+  res.send("Welcome to the API!");
+});
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });

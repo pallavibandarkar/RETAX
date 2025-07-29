@@ -1,20 +1,19 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+import mongoose from "mongoose";
 
-const organizationSchema = new Schema({
+const organizationSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
   },
   admins: [
     {
-      type: Schema.ObjectId,
+      type: mongoose.Schema.ObjectId,
       ref: "User",
     },
   ],
   teamSpaces: [
     {
-      type: Schema.ObjectId,
+      type: mongoose.Schema.ObjectId,
       ref: "TeamSpace",
     },
   ],
@@ -24,4 +23,6 @@ const organizationSchema = new Schema({
   },
 });
 
-module.exports = mongoose.model("Organization", organizationSchema);
+const Organization = mongoose.model("Organization", organizationSchema);
+
+export default Organization;

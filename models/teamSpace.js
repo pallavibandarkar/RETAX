@@ -1,23 +1,22 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+import mongoose from "mongoose";
 
-const teamSpaceSchema = new Schema({
+const teamSpaceSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
   },
   createdBy: {
-    type: Schema.ObjectId,
+    type: mongoose.Schema.ObjectId,
     ref: "User",
   },
   users: [
     {
-      type: Schema.ObjectId,
+      type: mongoose.Schema.ObjectId,
       ref: "User",
     },
   ],
   organizationId: {
-    type: Schema.ObjectId,
+    type: mongoose.Schema.ObjectId,
     ref: "Organization",
   },
   createdAt: {
@@ -26,4 +25,6 @@ const teamSpaceSchema = new Schema({
   },
 });
 
-module.exports = mongoose.model("TeamSpace", teamSpaceSchema);
+const TeamSpace = mongoose.model("TeamSpace", teamSpaceSchema);
+
+export default TeamSpace;

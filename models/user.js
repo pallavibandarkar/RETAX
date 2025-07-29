@@ -1,7 +1,6 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+import mongoose from "mongoose";
 
-const userSchema = new Schema({
+const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
@@ -21,7 +20,7 @@ const userSchema = new Schema({
     required: true,
   },
   teamSpaceId: {
-    type: Schema.ObjectId,
+    type: mongoose.Schema.ObjectId,
     ref: "TeamSpace",
   },
   createdAt: {
@@ -34,4 +33,6 @@ const userSchema = new Schema({
   },
 });
 
-module.exports = mongoose.model("User", userSchema);
+const User = mongoose.model("User", userSchema);
+
+export default User;

@@ -1,7 +1,4 @@
-const mongoose = require("mongoose");
-const User = require("../models/user.js");
-const Organization = require("../models/organization.js");
-const TeamSpace = require("../models/teamSpace.js");
+import mongoose from "mongoose";
 
 const dbUrl = "mongourl to be add";
 console.log(dbUrl);
