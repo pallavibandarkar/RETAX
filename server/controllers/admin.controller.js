@@ -2,22 +2,28 @@ import Organization from "../models/organization.js";
 import User from "../models/user.js";
 
 export const AdminLogin = async (req, res) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  const user = await User.findOne({ email, role: "admin" });
-  if (!user) {
-    return res.status(404).json({ message: "Admin not found" });
+    const user = await User.findOne({ email });
+    console.log(user);
+    // if (!user) {
+    //   return res.status(404).json({ message: "Admin not found" });
+    // }
+    if (user.password !== password) {
+      return res.status(401).json({ message: "Invalid password" });
+    }
+    res.status(200).json({ message: "Admin logged in successfully", user });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ msg: "Error Occurred while login" });
   }
-  if (user.password !== password) {
-    return res.status(401).json({ message: "Invalid password" });
-  }
-  res.status(200).json({ message: "Admin logged in successfully", user });
 };
 
 export const AdminSignup = async (req, res) => {
-  const { email, name, password } = req.body;
-
-  if (!email || !name || !password) {
+  const { email, name } = req.body;
+  console.log(req.body);
+  if (!email || !name) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
@@ -30,8 +36,7 @@ export const AdminSignup = async (req, res) => {
     const newAdmin = await User.create({
       email,
       name,
-      password,
-      role: "admin",
+      password: "123456",
     });
 
     await newAdmin.save();
@@ -52,14 +57,21 @@ export const CreateOrganization = async (req, res) => {
   if (!name) {
     return res.status(400).json({ message: "Organization name is required" });
   }
+  const org = await Organization.findOne({ name: name });
+  if (org) {
+    console.log(org);
+    return res.status(400).json({ message: "Oraganization already exist!" });
+  }
 
   try {
     const new_organization = await Organization.create({
       name,
-      admins: [id],
+      admin: id,
     });
     await new_organization.save();
-
+    const user = await User.findById(id);
+    user.organizationId = new_organization._id;
+    await user.save();
     res
       .status(201)
       .json({ message: "Organization created successfully", new_organization });
@@ -69,7 +81,7 @@ export const CreateOrganization = async (req, res) => {
 };
 
 export const AddUser = async (req, res) => {
-  const { email, name, password, role, isActive } = req.body;
+  const { email, name, password } = req.body;
 
   if (!email || !name || !password || !role) {
     return res.status(400).json({ message: "All fields are required" });
@@ -85,7 +97,6 @@ export const AddUser = async (req, res) => {
       email,
       name,
       password,
-      role,
     });
 
     await newMember.save();
@@ -105,4 +116,4 @@ export const GetAllUsers = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: "Error retrieving users", error });
   }
-}
+};

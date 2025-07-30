@@ -20,10 +20,6 @@ app.use(
 app.use("/api", AdminRoutes);
 app.use("/api", UserRoutes);
 
-app.get("/", (req, res) => {
-  res.send("Welcome to the API!");
-});
-
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
