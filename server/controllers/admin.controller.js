@@ -6,10 +6,9 @@ export const AdminLogin = async (req, res) => {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
-    console.log(user);
-    // if (!user) {
-    //   return res.status(404).json({ message: "Admin not found" });
-    // }
+    if (!user) {
+      return res.status(404).json({ message: "Admin not found" });
+    }
     if (user.password !== password) {
       return res.status(401).json({ message: "Invalid password" });
     }
@@ -51,8 +50,7 @@ export const AdminSignup = async (req, res) => {
 };
 
 export const CreateOrganization = async (req, res) => {
-  const { name } = req.body;
-  const id = req.headers["id"];
+  const { name,adminId } = req.body;
 
   if (!name) {
     return res.status(400).json({ message: "Organization name is required" });
@@ -66,10 +64,15 @@ export const CreateOrganization = async (req, res) => {
   try {
     const new_organization = await Organization.create({
       name,
-      admin: id,
+      admin: adminId,
     });
     await new_organization.save();
-    const user = await User.findById(id);
+    const user = await User.findById(adminId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    
     user.organizationId = new_organization._id;
     await user.save();
     res
@@ -83,7 +86,7 @@ export const CreateOrganization = async (req, res) => {
 export const AddUser = async (req, res) => {
   const { email, name, password } = req.body;
 
-  if (!email || !name || !password || !role) {
+  if (!email || !name || !password) {
     return res.status(400).json({ message: "All fields are required" });
   }
 

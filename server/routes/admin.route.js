@@ -13,6 +13,6 @@ router.post("/admin/login", AdminLogin);
 router.post("/admin/signup", AdminSignup);
 router.post("/admin/create-organization", CreateOrganization);
 router.post("/admin/add-user", AddUser);
-router.get("/admin/get-all-users", GetAllUsers);
+router.get("/admin/all-users", GetAllUsers);
 
 export default router;
