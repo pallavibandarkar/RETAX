@@ -46,8 +46,7 @@ export const AdminSignup = async (req, res) => {
 };
 
 export const CreateOrganization = async (req, res) => {
-  const { name } = req.body;
-  const id = req.headers["id"];
+  const { name, adminId } = req.body;
 
   if (!name) {
     return res.status(400).json({ message: "Organization name is required" });
@@ -56,9 +55,17 @@ export const CreateOrganization = async (req, res) => {
   try {
     const new_organization = await Organization.create({
       name,
-      admins: [id],
+      admin: adminId,
     });
     await new_organization.save();
+
+    const updatedUser = await User.findById(adminId);
+    if (!updatedUser) {
+      return res.status(404).json({ message: "Admin user not found" });
+    }
+    updatedUser.organization = new_organization._id;
+
+    await updatedUser.save();
 
     res
       .status(201)
@@ -105,4 +112,4 @@ export const GetAllUsers = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: "Error retrieving users", error });
   }
-}
+};

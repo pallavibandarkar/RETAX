@@ -8,7 +8,7 @@ export default function Users() {
     const fetchUsers = async () => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_BASE_URL}/admin/get-all-users`,
+          `${import.meta.env.VITE_BASE_URL}/admin/all-users`,
           {
             method: "GET",
             headers: {
