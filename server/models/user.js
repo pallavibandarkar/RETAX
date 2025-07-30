@@ -19,10 +19,6 @@ const userSchema = new mongoose.Schema({
     enum: ["admin", "sales", "support", "other"],
     required: true,
   },
-  teamSpaceId: {
-    type: mongoose.Schema.ObjectId,
-    ref: "TeamSpace",
-  },
   createdAt: {
     type: Date,
     default: Date.now,

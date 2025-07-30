@@ -14,9 +14,40 @@ export const AdminLogin = async (req, res) => {
   res.status(200).json({ message: "Admin logged in successfully", user });
 };
 
+export const AdminSignup = async (req, res) => {
+  const { email, name, password } = req.body;
+
+  if (!email || !name || !password) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  try {
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+
+    const newAdmin = await User.create({
+      email,
+      name,
+      password,
+      role: "admin",
+    });
+
+    await newAdmin.save();
+    console.log("New admin created:", newAdmin);
+    res.status(201).json({
+      message: "Admin created successfully",
+      newAdmin,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error creating admin", error });
+  }
+};
+
 export const CreateOrganization = async (req, res) => {
   const { name } = req.body;
-  const id = req.headers["id"]; 
+  const id = req.headers["id"];
 
   if (!name) {
     return res.status(400).json({ message: "Organization name is required" });
@@ -38,7 +69,7 @@ export const CreateOrganization = async (req, res) => {
 };
 
 export const AddUser = async (req, res) => {
-  const { email, name, password, role, teamSpaceId, isActive } = req.body;
+  const { email, name, password, role, isActive } = req.body;
 
   if (!email || !name || !password || !role) {
     return res.status(400).json({ message: "All fields are required" });
@@ -55,7 +86,6 @@ export const AddUser = async (req, res) => {
       name,
       password,
       role,
-      teamSpaceId,
     });
 
     await newMember.save();
@@ -67,3 +97,12 @@ export const AddUser = async (req, res) => {
     res.status(500).json({ message: "Error adding user", error });
   }
 };
+
+export const GetAllUsers = async (req, res) => {
+  try {
+    const users = await User.find();
+    res.status(200).json({ message: "Users retrieved successfully", users });
+  } catch (error) {
+    res.status(500).json({ message: "Error retrieving users", error });
+  }
+}
