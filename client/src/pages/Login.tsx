@@ -1,7 +1,6 @@
 import { GoogleLogin, type CredentialResponse } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
 
 type DecodedToken = {
   email: string;
@@ -10,49 +9,49 @@ type DecodedToken = {
   sub: string;
 };
 
-export default function Home() {
-  const navigate = useNavigate();
-  const handleSignup = async (credentialResponse: CredentialResponse) => {
+export default function Login() {
+  const handleLogin = async (credentialResponse: CredentialResponse) => {
     const decoded = jwtDecode<DecodedToken>(
       credentialResponse.credential || ""
     );
 
+    const { email } = decoded;
     try {
-      const { name, email } = decoded;
-      const res = await fetch("http://localhost:3000/api/admin/signup", {
+      const res = await fetch("http://localhost:3000/api/admin/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({ name: name, email }),
+        body: JSON.stringify({ email, password: "123456" }),
       });
       const data = await res.json();
+
       if (!res.ok) {
         toast.error(data.message || "Login failed");
         return;
       }
-      toast.success("Signed Up Successfully!!");
-      console.log("Signup Success:", email);
-      navigate(`/dashboard/${data.newAdmin._id}`);
+      toast.success("Logged in Successfully!!");
+      console.log("Log in Success:", email);
     } catch (err) {
       console.log(err);
-      toast.error("Failed to signed up");
+      alert("Login failed");
     }
   };
 
   const handleError = () => {
-    console.error("Signup Failed");
+    toast.error("Failed to Login");
+    console.error("Login Failed");
   };
 
   return (
     <div className="flex flex-col p-12 w-1/2 m-auto mt-10 bg-gray-200 text-center px-4 rounded-2xl">
-      <h1 className="text-4xl font-bold mb-4">Google Sign In</h1>
+      <h1 className="text-4xl font-bold mb-4">Login</h1>
       <p className="text-lg text-gray-600 mb-6">
-        Sign in with your Google account to continue.
+        Use your Google account to Log in.
       </p>
       <div className="w-1/2 m-auto">
-        <GoogleLogin onSuccess={handleSignup} onError={handleError} />
+        <GoogleLogin onSuccess={handleLogin} onError={handleError} />
       </div>
     </div>
   );

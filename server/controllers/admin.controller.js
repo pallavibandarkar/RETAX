@@ -1,5 +1,6 @@
 import Organization from "../models/organization.js";
 import User from "../models/user.js";
+import mongoose from "mongoose";
 
 export const AdminLogin = async (req, res) => {
   try {
@@ -7,7 +8,9 @@ export const AdminLogin = async (req, res) => {
 
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({ message: "Admin not found" });
+      return res
+        .status(404)
+        .json({ message: "User not found, Please Logged in" });
     }
     if (user.password !== password) {
       return res.status(401).json({ message: "Invalid password" });
@@ -41,7 +44,7 @@ export const AdminSignup = async (req, res) => {
     await newAdmin.save();
     console.log("New admin created:", newAdmin);
     res.status(201).json({
-      message: "Admin created successfully",
+      message: "User created successfully",
       newAdmin,
     });
   } catch (error) {
@@ -50,8 +53,7 @@ export const AdminSignup = async (req, res) => {
 };
 
 export const CreateOrganization = async (req, res) => {
-  const { name,adminId } = req.body;
-
+  const { name, adminId } = req.body;
   if (!name) {
     return res.status(400).json({ message: "Organization name is required" });
   }
@@ -64,21 +66,23 @@ export const CreateOrganization = async (req, res) => {
   try {
     const new_organization = await Organization.create({
       name,
-      admin: adminId,
+      admin: new mongoose.Types.ObjectId(adminId),
     });
-    await new_organization.save();
+
     const user = await User.findById(adminId);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    
+
     user.organizationId = new_organization._id;
     await user.save();
+    await new_organization.save();
     res
       .status(201)
       .json({ message: "Organization created successfully", new_organization });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Error creating organization", error });
   }
 };

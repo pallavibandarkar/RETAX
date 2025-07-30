@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema({
     default: true,
   },
   organizationId: {
-    type: mongoose.Schema.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: "Organization",
   },
   teams: [
