@@ -9,6 +9,10 @@ const teamSpaceSchema = new mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     ref: "User",
   },
+  admin: {
+    type: mongoose.Schema.ObjectId,
+    ref: "User",
+  },
   users: [
     {
       type: mongoose.Schema.ObjectId,

@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["admin", "sales", "support", "other"],
+    enum: ["admin", "team admin", "sales", "support", "other"],
     required: true,
   },
   createdAt: {
@@ -27,6 +27,12 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  teams: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: "TeamSpace",
+    },
+  ],
 });
 
 const User = mongoose.model("User", userSchema);

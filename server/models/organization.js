@@ -5,12 +5,10 @@ const organizationSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  admins: [
-    {
-      type: mongoose.Schema.ObjectId,
-      ref: "User",
-    },
-  ],
+  admin: {
+    type: mongoose.Schema.ObjectId,
+    ref: "User",
+  },
   teamSpaces: [
     {
       type: mongoose.Schema.ObjectId,
