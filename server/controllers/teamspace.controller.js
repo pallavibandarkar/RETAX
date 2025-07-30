@@ -45,31 +45,25 @@ export const createTeamSpace = async (req, res) => {
 };
 
 export const AddMembers = async (req, res) => {
-  const { teamSpaceId } = req.body;
+  const { teamSpaceId,userId } = req.body;
   try {
     const teamSpace = await TeamSpace.findById(teamSpaceId);
     if (!teamSpace) {
       return res.status(404).json({ message: "TeamSpace not found" });
     }
 
-    const members = await User.find({ teamSpaceId: teamSpaceId });
+    const members = await User.find({ _id: userId });
     console.log(members);
+    
     if (members.length === 0) {
       return res
         .status(404)
-        .json({ message: "No members found in this TeamSpace" });
+        .json({ message: "No members found" });
     }
 
-    const existingMemberIds = teamSpace.users.map((userId) =>
-      userId.toString()
-    );
-
-    const newMembers = members.filter(
-      (member) => !existingMemberIds.includes(member._id.toString())
-    );
-
+    const newMembers = members.filter((member) => !teamSpace.users.includes(member._id));
     if (newMembers.length === 0) {
-      return res.status(400).json({ message: "All members already added" });
+      return res.status(400).json({ message: "All members are already part of this TeamSpace" });
     }
 
     teamSpace.users.push(...newMembers.map((member) => member._id));
