@@ -1,10 +1,15 @@
 import Organization from "../models/organization.js";
+import TeamSpace from "../models/teamSpace.js";
 import User from "../models/user.js";
 import mongoose from "mongoose";
+import { generateToken } from "../utils/generateToken.js";
 
 export const AdminLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
+
+    if (email == process.env.SUPER_ADMIN) {
+    }
 
     const user = await User.findOne({ email });
     if (!user) {
@@ -15,6 +20,9 @@ export const AdminLogin = async (req, res) => {
     if (user.password !== password) {
       return res.status(401).json({ message: "Invalid password" });
     }
+
+    await generateToken(user.id, res);
+
     res.status(200).json({ message: "Admin logged in successfully", user });
   } catch (err) {
     console.log(err);
@@ -42,6 +50,9 @@ export const AdminSignup = async (req, res) => {
     });
 
     await newAdmin.save();
+
+    await generateToken(newAdmin.id, res);
+
     console.log("New admin created:", newAdmin);
     res.status(201).json({
       message: "User created successfully",
@@ -84,6 +95,51 @@ export const CreateOrganization = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Error creating organization", error });
+  }
+};
+
+export const GetAllOrganizations = async (req, res) => {
+  try {
+    const organizations = await Organization.find();
+    res.status(200).json({
+      message: "Organizations retrieved successfully",
+      organizations,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error retrieving organizations", error });
+  }
+};
+
+export const GetAllTeamSpaces = async (req, res) => {
+  try {
+    const teamSpaces = await TeamSpace.find();
+    res.status(200).json({
+      message: "TeamSpaces retrieved successfully",
+      teamSpaces,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error retrieving TeamSpaces", error });
+  }
+};
+
+export const deleteOrganisation = async (req, res) => {
+  const { orgId } = req.params;
+  try {
+    const organization = await Organization.findById(orgId);
+
+    if (!organization) {
+      return res
+        .status(404)
+        .json({ message: "No Organisation exists", success: false });
+    }
+
+    const deleteOrg = await Organization.findByIdAndDelete(orgId);
+
+    return res
+      .status(200)
+      .json({ message: "Organisation deleted successfully", success: true });
+  } catch (error) {
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 

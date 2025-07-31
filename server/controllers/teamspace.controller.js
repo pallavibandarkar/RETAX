@@ -12,7 +12,7 @@ export const createTeamSpace = async (req, res) => {
 
     const newTeamSpace = new TeamSpace({
       name,
-      createdBy: new mongoose.Schema.Types.ObjectId(adminId),
+      createdBy: adminId,
     });
     const savedTeamSpace = await newTeamSpace.save();
 
@@ -82,13 +82,14 @@ export const AddMembers = async (req, res) => {
 };
 
 export const deleteTeamSpace = async (req, res) => {
-  const { teamSpaceId } = req.body;
+  const { teamspaceId } = req.params;
+  console.log(req.params);
   try {
-    const Delete_Id = await TeamSpace.findById(teamSpaceId);
+    const Delete_Id = await TeamSpace.findById(teamspaceId);
     if (!Delete_Id) {
       return res.status(404).json({ message: "TeamSpace not found" });
     }
-    await TeamSpace.findByIdAndDelete(teamSpaceId);
+    await TeamSpace.findByIdAndDelete(teamspaceId);
   } catch (error) {
     return res.status(500).json({ message: "Error deleting TeamSpace", error });
   }
