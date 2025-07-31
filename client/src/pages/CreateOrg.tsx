@@ -26,7 +26,9 @@ const CreateOrganization: React.FC = () => {
     e.preventDefault();
     const res = await axios.post(
       "http://localhost:3000/api/admin/create-organization",
-      { name: data.orgName, adminId: id }
+      { name: data.orgName, adminId: id },{
+        withCredentials:true
+      }
     );
     try {
       console.log(res.data);
