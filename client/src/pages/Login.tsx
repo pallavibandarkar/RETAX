@@ -1,7 +1,7 @@
 import { GoogleLogin, type CredentialResponse } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
-
+import { useNavigate } from "react-router-dom";
 type DecodedToken = {
   email: string;
   name: string;
@@ -10,6 +10,7 @@ type DecodedToken = {
 };
 
 export default function Login() {
+  const navigate = useNavigate();
   const handleLogin = async (credentialResponse: CredentialResponse) => {
     const decoded = jwtDecode<DecodedToken>(
       credentialResponse.credential || ""
@@ -26,13 +27,14 @@ export default function Login() {
         body: JSON.stringify({ email, password: "123456" }),
       });
       const data = await res.json();
-
+      console.log(data);
       if (!res.ok) {
         toast.error(data.message || "Login failed");
         return;
       }
       toast.success("Logged in Successfully!!");
       console.log("Log in Success:", email);
+      setTimeout(() => navigate(`/dashboard/${data.user._id}`), 4000);
     } catch (err) {
       console.log(err);
       alert("Login failed");

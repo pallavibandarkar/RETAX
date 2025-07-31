@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 
 export const createTeamSpace = async (req, res) => {
   const { name, adminId } = req.body;
+  const id = req.user._id;
   try {
     if (!name) {
       return res.status(400).json({ message: "TeamSpace name is required" });
@@ -31,7 +32,7 @@ export const createTeamSpace = async (req, res) => {
 
     const adminUser = await User.findById(adminId);
     if (!adminUser) {
-      return res.status(404).json({ message: "Admin user not found" });
+      return res.status(404).json({ message: "Admin user not found", id });
     }
     adminUser.teams.push(TeamId);
     await adminUser.save();
@@ -47,6 +48,7 @@ export const createTeamSpace = async (req, res) => {
 
 export const AddMembers = async (req, res) => {
   const { teamSpaceId, userId } = req.body;
+  const id = req.user._id;
   try {
     const teamSpace = await TeamSpace.findById(teamSpaceId);
     if (!teamSpace) {
@@ -64,9 +66,10 @@ export const AddMembers = async (req, res) => {
       (member) => !teamSpace.users.includes(member._id)
     );
     if (newMembers.length === 0) {
-      return res
-        .status(400)
-        .json({ message: "All members are already part of this TeamSpace" });
+      return res.status(400).json({
+        message: "All members are already part of this TeamSpace",
+        id,
+      });
     }
 
     teamSpace.users.push(...newMembers.map((member) => member._id));
@@ -83,11 +86,12 @@ export const AddMembers = async (req, res) => {
 
 export const deleteTeamSpace = async (req, res) => {
   const { teamspaceId } = req.params;
+  const id = req.user._id;
   console.log(req.params);
   try {
     const Delete_Id = await TeamSpace.findById(teamspaceId);
     if (!Delete_Id) {
-      return res.status(404).json({ message: "TeamSpace not found" });
+      return res.status(404).json({ message: "TeamSpace not found", id });
     }
     await TeamSpace.findByIdAndDelete(teamspaceId);
   } catch (error) {

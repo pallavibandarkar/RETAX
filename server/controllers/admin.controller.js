@@ -64,6 +64,7 @@ export const AdminSignup = async (req, res) => {
 };
 
 export const CreateOrganization = async (req, res) => {
+  const id = req.user._id;
   const { name, adminId } = req.body;
   if (!name) {
     return res.status(400).json({ message: "Organization name is required" });
@@ -89,9 +90,11 @@ export const CreateOrganization = async (req, res) => {
     user.organizationId = new_organization._id;
     await user.save();
     await new_organization.save();
-    res
-      .status(201)
-      .json({ message: "Organization created successfully", new_organization });
+    res.status(201).json({
+      message: "Organization created successfully",
+      new_organization,
+      id,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Error creating organization", error });
@@ -99,11 +102,32 @@ export const CreateOrganization = async (req, res) => {
 };
 
 export const GetAllOrganizations = async (req, res) => {
+  const id = req.user._id;
   try {
     const organizations = await Organization.find();
     res.status(200).json({
       message: "Organizations retrieved successfully",
       organizations,
+      id,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error retrieving organizations", error });
+  }
+};
+
+export const getOrganization = async (req, res) => {
+  const id = req.user._id;
+  try {
+    const organization = await Organization.findOne({ admin: id })
+      .populate("teamSpaces")
+      .populate("admin");
+    if (!organization) {
+      res.status(400).json({ message: "Organization not found" });
+    }
+    res.status(200).json({
+      message: "Organizations retrieved successfully",
+      organization,
+      id,
     });
   } catch (error) {
     res.status(500).json({ message: "Error retrieving organizations", error });
@@ -111,11 +135,13 @@ export const GetAllOrganizations = async (req, res) => {
 };
 
 export const GetAllTeamSpaces = async (req, res) => {
+  const id = req.user._id;
   try {
     const teamSpaces = await TeamSpace.find();
     res.status(200).json({
       message: "TeamSpaces retrieved successfully",
       teamSpaces,
+      id,
     });
   } catch (error) {
     res.status(500).json({ message: "Error retrieving TeamSpaces", error });
@@ -123,6 +149,7 @@ export const GetAllTeamSpaces = async (req, res) => {
 };
 
 export const deleteOrganisation = async (req, res) => {
+  const id = req.user._id;
   const { orgId } = req.params;
   try {
     const organization = await Organization.findById(orgId);
@@ -144,6 +171,7 @@ export const deleteOrganisation = async (req, res) => {
 };
 
 export const AddUser = async (req, res) => {
+  const id = req.user._id;
   const { email, name, password } = req.body;
 
   if (!email || !name || !password) {
@@ -166,6 +194,7 @@ export const AddUser = async (req, res) => {
     console.log("New user created:", newMember);
     res.status(201).json({
       message: "User added successfully",
+      id,
     });
   } catch (error) {
     res.status(500).json({ message: "Error adding user", error });
@@ -173,9 +202,12 @@ export const AddUser = async (req, res) => {
 };
 
 export const GetAllUsers = async (req, res) => {
+  const id = req.user._id;
   try {
     const users = await User.find();
-    res.status(200).json({ message: "Users retrieved successfully", users });
+    res
+      .status(200)
+      .json({ message: "Users retrieved successfully", users, id });
   } catch (error) {
     res.status(500).json({ message: "Error retrieving users", error });
   }

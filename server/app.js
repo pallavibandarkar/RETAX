@@ -21,7 +21,16 @@ app.use(
 );
 
 app.use("/api", AdminRoutes);
-app.use("/api", Auth,UserRoutes);
+app.use("/api", Auth, UserRoutes);
+
+app.get("/getUser", (req, res) => {
+  console.log(req.user);
+  const user = req.user;
+  if (!user) {
+    return res.status(400).send({ message: "User is not logged in!!" });
+  }
+  return res.status(200).send({ message: "User exist", data: req.user });
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
