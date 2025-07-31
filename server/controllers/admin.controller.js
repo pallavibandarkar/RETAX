@@ -1,4 +1,5 @@
 import Organization from "../models/organization.js";
+import TeamSpace from "../models/teamSpace.js";
 import User from "../models/user.js";
 import mongoose from "mongoose";
 
@@ -84,6 +85,69 @@ export const CreateOrganization = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Error creating organization", error });
+  }
+};
+
+export const GetAllOrganizations = async (req, res) => {
+  try {
+    const organizations = await Organization.find();
+    res.status(200).json({
+      message: "Organizations retrieved successfully",
+      organizations,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error retrieving organizations", error });
+  }
+};
+
+export const getOrganization = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const organization = await Organization.findOne({ admin: id }).populate(
+      "teamSpaces"
+    );
+    if (!organization) {
+      res.status(400).json({ message: "Organization not found" });
+    }
+    res.status(200).json({
+      message: "Organizations retrieved successfully",
+      organization,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error retrieving organizations", error });
+  }
+};
+
+export const GetAllTeamSpaces = async (req, res) => {
+  try {
+    const teamSpaces = await TeamSpace.find();
+    res.status(200).json({
+      message: "TeamSpaces retrieved successfully",
+      teamSpaces,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error retrieving TeamSpaces", error });
+  }
+};
+
+export const deleteOrganisation = async (req, res) => {
+  const { orgId } = req.params;
+  try {
+    const organization = await Organization.findById(orgId);
+
+    if (!organization) {
+      return res
+        .status(404)
+        .json({ message: "No Organisation exists", success: false });
+    }
+
+    const deleteOrg = await Organization.findByIdAndDelete(orgId);
+
+    return res
+      .status(200)
+      .json({ message: "Organisation deleted successfully", success: true });
+  } catch (error) {
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 

@@ -24,23 +24,20 @@ const CreateOrganization: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(data);
-    console.log(id);
+    const res = await axios.post(
+      "http://localhost:3000/api/admin/create-organization",
+      { name: data.orgName, adminId: id }
+    );
     try {
-      const res = await axios.post(
-        "http://localhost:3000/api/admin/create-organization",
-        { name: data.orgName, adminId: id }
-      );
-
       console.log(res.data);
       toast.success(res.data.message);
       setData({
         orgName: "",
       });
-      navigate(`/dashboard/${id}`);
+      navigate(`/createTeam/${id}`);
     } catch (err) {
       console.log(err);
-      toast.error("Error Occurred");
+      toast.error(res.data.message || "Error Occurred");
     }
   };
   return (

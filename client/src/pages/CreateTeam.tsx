@@ -29,7 +29,7 @@ const CreateTeam: React.FC = () => {
     console.log(id);
     try {
       const res = await axios.post(
-        "http://localhost:3000/api/admin/create-organization",
+        "http://localhost:3000/api/teamspace/create",
         { name: data.teamName, adminId: id }
       );
 
