@@ -19,7 +19,7 @@ export default function App() {
         <Route path="/createTeam/:id" element={<CreateTeam />} />
         <Route path="/dashboard/:id" element={<Dashboard />} />
       </Routes>
-      <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer position="top-right" autoClose={2000} />
     </div>
   );
 }

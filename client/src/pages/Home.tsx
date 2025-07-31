@@ -34,7 +34,15 @@ export default function Home() {
       }
       toast.success("Signed Up Successfully!!");
       console.log("Signup Success:", email);
-      navigate(`/dashboard/${data.newAdmin._id}`);
+      console.log("User respose data : ", data);
+      console.log(data.newAdmin.role);
+      if (!data.newAdmin.role || data.newAdmin.role === "undefined") {
+        setTimeout(() => {
+          navigate(`/createOrg/${data.newAdmin._id}`);
+        }, 3000);
+      } else {
+        navigate(`/dashboard/${data.newAdmin._id}`);
+      }
     } catch (err) {
       console.log(err);
       toast.error("Failed to signed up");
